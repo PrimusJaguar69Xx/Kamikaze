@@ -1,0 +1,3 @@
+MapTiles -> use vectors
+Object -> use XYRot and enable rotation
+sprite -> use vectors and intergrate frame counter

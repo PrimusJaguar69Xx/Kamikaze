@@ -1,0 +1,11 @@
+TODO
+
+Base SDL Setup
+CLouds
+Sprite
+Movement
+Animations
+Shooting
+UI
+Multiple sprites
+fx
