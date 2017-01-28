@@ -22,6 +22,8 @@ class Effect {
 	int nFrames;
 	int nEffects;
 
+	SDL_Point center;
+
 public:
 
 	Effect(char* path, SDL_Renderer* render, int nFrames, int frameSize);
@@ -29,7 +31,7 @@ public:
 	void NewEffect(XYRot pos);
 	void DeleteEffect(int effectNum);
 	void NextFrame(int effectNum);
-	void RenderEffects();
+	void RenderEffects(SDL_Renderer* render);
 
 	int GetNEffect() {
 		return nEffects;

@@ -17,6 +17,9 @@ Effect::Effect(char* path, SDL_Renderer* render, int nFrames, int frameSize) {
 	pos.reserve(sizeof(XYRot) * 4);
 
 	nEffects = 0;
+
+	center.x = frameSize / 2;
+	center.y = frameSize / 2;
 }
 
 void Effect::NewEffect(XYRot pos) {
@@ -38,12 +41,9 @@ void Effect::NextFrame(int effectNum) {
 		DeleteEffect(effectNum);
 } 
 
-void Effect::RenderEffects() {
+void Effect::RenderEffects(SDL_Renderer* render) {
 	for (unsigned int i = 0; i < nEffects; i++) {
-		SDL_Point temp;
-		temp.x = texture->GetWidth();
-		temp.y = texture->GetHeight();
-		texture->RenderTexture(pos[i].spriteX, pos[i].spriteY, &sourceRects[frame[i] / EFFECT_UPDATERATE], pos[i].spriteRot, &temp, SDL_FLIP_NONE);
-		printf("effect xy: %f, %f\n", pos[i].spriteX, pos[i].spriteY);
+		texture->RenderTexture(pos[i].spriteX - center.x, pos[i].spriteY - center.y, &sourceRects[frame[i] / EFFECT_UPDATERATE], pos[i].spriteRot, &center, SDL_FLIP_NONE);
+		SDL_RenderDrawPoint(render, pos[i].spriteX + center.x, pos[i].spriteY + center.y);
 	}
 }

@@ -235,10 +235,10 @@ void Default_Level::Render() {
 	boxes->RenderObject();
 	walls->renderTiles();
 
-	hitObjectEffect->RenderEffects();
+	hitObjectEffect->RenderEffects(renderer);
 
 	crosshair->Render();
 
-	SDL_RenderDrawRects(renderer, objects, nObjects);
+//	SDL_RenderDrawRects(renderer, objects, nObjects);
 
 }
