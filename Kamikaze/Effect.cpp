@@ -44,6 +44,5 @@ void Effect::NextFrame(int effectNum) {
 void Effect::RenderEffects(SDL_Renderer* render) {
 	for (unsigned int i = 0; i < nEffects; i++) {
 		texture->RenderTexture(pos[i].spriteX - center.x, pos[i].spriteY - center.y, &sourceRects[frame[i] / EFFECT_UPDATERATE], pos[i].spriteRot, &center, SDL_FLIP_NONE);
-		SDL_RenderDrawPoint(render, pos[i].spriteX + center.x, pos[i].spriteY + center.y);
 	}
 }

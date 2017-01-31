@@ -29,6 +29,7 @@ class Default_Level: public Level_Template {
 	Sprite* solider;
 
 	Effect* hitObjectEffect;
+	Effect* hitSpriteEffect;
 
 	Sprite* Target;
 	int TargetFrame;

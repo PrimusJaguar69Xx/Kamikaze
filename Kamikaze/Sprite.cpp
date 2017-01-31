@@ -205,4 +205,5 @@ hitInfo Sprite::CheckLineOfFire(SDL_Rect targetHitbox, SDL_Rect* obstacles, int 
 
 void Sprite::RenderSprite(int nFrame, int updateRate) {
 	texture->RenderTexture(spritePos.spriteX, spritePos.spriteY, &spriteSheet[state.aniN].sprites[nFrame / updateRate], spritePos.spriteRot, &localCenter, SDL_FLIP_NONE);
+	SDL_RenderDrawRect(renderer, &hitbox);
 }

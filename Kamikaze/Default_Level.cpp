@@ -9,6 +9,7 @@ void Default_Level::Load(SDL_Renderer* render) {
 	renderer = render;
 
 	hitObjectEffect = new Effect("Resources/hit_object.png", render, 3, 64);
+	hitSpriteEffect = new Effect("Resources/blood.png", render, 4, 64);
 
 	boxes = new Object("Resources/boxes.png", render, 400, 200);
 	boxes->CreateCustomHitbox(0, 0, 155, 190);
@@ -33,7 +34,7 @@ void Default_Level::Load(SDL_Renderer* render) {
 	Target->CreateSpriteSheet(192, 192, 6, 6);
 	Target->SetCenter(90, 130);
 	Target->CreateCustomHitbox(60, 96, 60, 78);
-	Target->ChangePos(270, 1000, 800);
+	Target->ChangePos(270, 800, 500);
 	Target->SetState(0, 1);
 	Target->SetSpriteN(1);
 	Target->UpdateHitbox();
@@ -184,6 +185,11 @@ void Default_Level::Update() {
 			solider_effects->SetState(0, 4);
 			hitInfo info = solider->CheckLineOfFire(Target->GetHitbox(), objects, nObjects, 102, 54);
 			if (info.Object == HITOBJECT_SPRITE) {
+				XYRot temp;
+				temp.spriteX = info.pointOfImpact.x + cos((info.angle - 90) * 0.0174533) * (Target->getAnimation(Target->GetState().aniN).sprites[0].w / 2);
+				temp.spriteY = info.pointOfImpact.y + sin((info.angle - 90) * 0.0174533) * (Target->getAnimation(Target->GetState().aniN).sprites[0].h / 2);
+				temp.spriteRot = info.angle;
+				hitSpriteEffect->NewEffect(temp);
 				Target->SetState(5, 6);
 				printf("target hit");
 			}
@@ -209,7 +215,6 @@ void Default_Level::Update() {
 
 
 	if ((TargetFrame / 24 < Target->GetState().nFrames-1) && (Target->GetState().aniN == 5)) TargetFrame++;
-	if (TargetFrame / 24 == 5)Target->CreateCustomHitbox(0, 0, Target->getAnimation(5).sprites[5].h, Target->getAnimation(5).sprites[5].h);
 	if (soliderFrame / SPRITE_UPDATERATE >= solider->GetState().nFrames) soliderFrame = 0;
 	if (solider_effectsFrame / SPRITE_EFFECT_UPDATERATE > 4) {
 		solider_effectsFrame = 0;
@@ -218,6 +223,10 @@ void Default_Level::Update() {
 
 	for (int i = 0; i < hitObjectEffect->GetNEffect(); i++) {
 		hitObjectEffect->NextFrame(i);
+	}
+
+	for (int i = 0; i < hitSpriteEffect->GetNEffect(); i++) {
+		hitSpriteEffect->NextFrame(i);
 	}
 
 	crosshair->UpdatePos();
@@ -235,9 +244,11 @@ void Default_Level::Render() {
 	boxes->RenderObject();
 	walls->renderTiles();
 
+	hitSpriteEffect->RenderEffects(renderer);
 	hitObjectEffect->RenderEffects(renderer);
 
-	crosshair->Render();
+
+//	crosshair->Render();
 
 //	SDL_RenderDrawRects(renderer, objects, nObjects);
 
