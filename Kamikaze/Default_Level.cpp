@@ -9,8 +9,6 @@ void Default_Level::Load(SDL_Renderer* render) {
 	SDL_Color color = {255, 255, 255};
 	timer = new Timer(120, "Resources/Pixeled.ttf", 864+16+2, 50+16+8, 102, 160, 28, color, render);
 
-	timerBox = new Resource_Texture("Resources/timerbox.png", render);
-
 	hitObjectEffect = new Effect("Resources/hit_object.png", render, 3, 64);
 	hitSpriteEffect = new Effect("Resources/blood.png", render, 4, 64);
 
@@ -463,7 +461,6 @@ void Default_Level::Render() {
 		solider2_effects->RenderSprite();
 	}
 
-
 	boxes->RenderObject();
 	boxes2->RenderObject();
 	boxes3->RenderObject();
@@ -473,12 +470,9 @@ void Default_Level::Render() {
 
 	walls->renderTiles();
 
-
-
-
 	hitSpriteEffect->RenderEffects(renderer);
 	hitObjectEffect->RenderEffects(renderer);
 
-	SDL_RenderDrawRects(renderer, objects, nObjects);
+//	SDL_RenderDrawRects(renderer, objects, nObjects);
 
 }

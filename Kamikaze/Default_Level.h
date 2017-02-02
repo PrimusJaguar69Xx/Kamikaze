@@ -28,7 +28,6 @@
 class Default_Level: public Level_Template {
 
 	Timer* timer;
-	Resource_Texture* timerBox;
 
 	int soliderFrame;
 	Sprite* solider;
