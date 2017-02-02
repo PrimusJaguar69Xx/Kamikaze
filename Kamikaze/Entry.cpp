@@ -18,9 +18,10 @@ int main(int argc, char* argv[]) {
 	int iResult = 0;
 
 	Game_Controller* GameControl = new Game_Controller();
-	iResult = GameControl->Init(1920, 1080);
+	iResult = GameControl->Init(1280, 720);
 	if (iResult < 0) {
 		printf("call to gamecontroller->init() failed");
+		return -1;
 	}
 	GameControl->LoadLevel(false, new Default_Level());
 

@@ -4,7 +4,7 @@
 #include <SDL2\SDL_image.h>
 #include "Level_Template.h"
 #include <stdio.h>
-
+#include <SDL2\SDL_ttf.h>
 
 class Game_Controller {
 	SDL_Window* window;
@@ -17,7 +17,7 @@ public:
 	Game_Controller();
 	~Game_Controller();
 
-	int Init(int windowHeight, int windowWidth);
+	int Init(int windowW, int windowH);
 
 	void LoadLevel(bool bCurrLvl, Level_Template* lvl);
 	void UnloadLevel();

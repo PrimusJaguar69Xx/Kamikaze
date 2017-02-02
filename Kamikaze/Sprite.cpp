@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-Sprite::Sprite(SDL_Renderer* render) {
+Sprite::Sprite(SDL_Renderer* render, int updaterate) {
 	texture = nullptr;
 	renderer = render;
 
@@ -11,6 +11,14 @@ Sprite::Sprite(SDL_Renderer* render) {
 
 	xOffset = 0;
 	yOffset = 0;
+
+	frame = 0;
+
+	state.aniN = 0;
+	state.nFrames = 1;
+
+	UpdateRate = updaterate;
+
 }
 
 Sprite::~Sprite() {
@@ -96,6 +104,46 @@ bool Sprite::CheckCollision(SDL_Rect collisionObject[], bool sprite, int nObject
 		int collisionObjectTop = collisionObject[i].y;
 		int collisionObjectRight = collisionObject[i].x + collisionObject[i].w;
 		int collisionObjectBottom = collisionObject[i].y + collisionObject[i].h;
+		//	printf("left: %d \ntop: %d \nright: %d \nbottom: %d \n\n", collisionObjectLeft, collisionObjectTop, collisionObjectRight, collisionObjectBottom);
+
+
+		if (hitboxLeft > collisionObjectRight)
+			continue;
+
+		if (hitboxTop > collisionObjectBottom)
+			continue;
+
+		if (hitboxRight < collisionObjectLeft)
+			continue;
+
+		if (hitboxBottom < collisionObjectTop)
+			continue;
+
+		return true;
+	}
+}
+
+bool Sprite::CheckCollision(std::vector<Sprite*> collisionObject, bool sprite, int nObjects, int xSpritePosOff, int ySpritePosOff) {
+	hitbox.x = xOffset + spritePos.spriteX + xSpritePosOff;
+	hitbox.y = yOffset + spritePos.spriteY + ySpritePosOff;
+
+	int hitboxLeft = hitbox.x;
+	int hitboxTop = hitbox.y;
+	int hitboxRight = hitbox.x + hitbox.w;
+	int hitboxBottom = hitbox.y + hitbox.h;
+	//	printf("left: %d \ntop: %d \nright: %d \nbottom: %d \n\n", hitboxLeft, hitboxTop, hitboxRight, hitboxBottom);
+
+	for (int i = 0; i <= nObjects; i++) {
+		if (i == nObjects) {
+			return false;
+		}
+		if (sprite && i == nSprite) continue;
+
+
+		int collisionObjectLeft = collisionObject[i]->GetHitbox().x;
+		int collisionObjectTop = collisionObject[i]->GetHitbox().y;
+		int collisionObjectRight = collisionObject[i]->GetHitbox().x + collisionObject[i]->GetHitbox().w;
+		int collisionObjectBottom = collisionObject[i]->GetHitbox().y + collisionObject[i]->GetHitbox().h;
 		//	printf("left: %d \ntop: %d \nright: %d \nbottom: %d \n\n", collisionObjectLeft, collisionObjectTop, collisionObjectRight, collisionObjectBottom);
 
 
@@ -203,7 +251,99 @@ hitInfo Sprite::CheckLineOfFire(SDL_Rect targetHitbox, SDL_Rect* obstacles, int 
 	return info;
 }
 
-void Sprite::RenderSprite(int nFrame, int updateRate) {
-	texture->RenderTexture(spritePos.spriteX, spritePos.spriteY, &spriteSheet[state.aniN].sprites[nFrame / updateRate], spritePos.spriteRot, &localCenter, SDL_FLIP_NONE);
-	SDL_RenderDrawRect(renderer, &hitbox);
+hitInfo Sprite::CheckLineOfFire(std::vector<Sprite*> targetHitboxes, SDL_Rect* obstacles, int nObstacles, int xOffset, int yOffset) {
+
+	hitInfo info;
+
+	int mouseX = 0;
+	int mouseY = 0;
+	SDL_GetMouseState(&mouseX, &mouseY);
+
+	printf("x: %d, y: %d\n", mouseX, mouseY);
+
+	int offsetX = xOffset - localCenter.x;
+	int offsetY = localCenter.y - yOffset;
+
+	int rot = spritePos.spriteRot;
+	info.angle = rot;
+
+	double x = spritePos.spriteX + localCenter.x;
+	double y = spritePos.spriteY + localCenter.y;
+
+	for (int i = 0; i < targetHitboxes.size(); i++) {
+		if (i == nSprite)
+			continue;
+
+		int collisionObjectLeft = targetHitboxes[i]->GetHitbox().x;
+		int collisionObjectTop = targetHitboxes[i]->GetHitbox().y;
+		int collisionObjectRight = targetHitboxes[i]->GetHitbox().x + targetHitboxes[i]->GetHitbox().w;
+		int collisionObjectBottom = targetHitboxes[i]->GetHitbox().y + targetHitboxes[i]->GetHitbox().h;
+		//	printf("left: %d \ntop: %d \nright: % d \nbottom: %d \n\n", collisionObjectLeft, collisionObjectTop, collisionObjectRight, collisionObjectBottom);
+
+		for (int ii = 0; ii < MAX_HIT_DISTANCE; ii++) {
+			for (int iii = 0; iii < nObstacles; iii++) {
+				if (iii == nObstacles) {
+					break;
+				}
+
+				int collisionObjectLeftO = obstacles[iii].x;
+				int collisionObjectTopO = obstacles[iii].y;
+				int collisionObjectRightO = obstacles[iii].x + obstacles[iii].w;
+				int collisionObjectBottomO = obstacles[iii].y + obstacles[iii].h;
+				//	printf("left: %d \ntop: %d \nright: %d \nbottom: %d \n\n", collisionObjectLeft, collisionObjectTop, collisionObjectRight, collisionObjectBottom);
+
+
+				if (x > collisionObjectRightO)
+					continue;
+
+				if (y > collisionObjectBottomO)
+					continue;
+
+				if (x < collisionObjectLeftO)
+					continue;
+
+				if (y < collisionObjectTopO)
+					continue;
+
+
+				info.Object = HITOBJECT_OBSTACLE;
+				info.pointOfImpact.x = x;
+				info.pointOfImpact.y = y;
+				info.nObject = i;
+				return info;
+			}
+
+			x += cos((rot - 90) * 0.0174533);
+			y += sin((rot - 90) * 0.0174533);
+
+			if (x > collisionObjectRight)
+				continue;
+
+			if (y > collisionObjectBottom)
+				continue;
+
+			if (x < collisionObjectLeft)
+				continue;
+
+			if (y < collisionObjectTop)
+				continue;
+
+			if (!(y < collisionObjectTop) && !(x < collisionObjectLeft) && !(y > collisionObjectBottom) && !(x > collisionObjectRight))
+				info.Object = HITOBJECT_SPRITE;
+			info.pointOfImpact.x = x;
+			info.pointOfImpact.y = y;
+			info.nObject = i;
+			return info;
+		}
+	}
+	info.Object = HITOBJECT_NULL;
+	info.pointOfImpact.x = NULL;
+	info.pointOfImpact.y = NULL;
+	info.nObject = NULL;
+	return info;
+}
+
+void Sprite::RenderSprite() {
+	texture->RenderTexture(spritePos.spriteX, spritePos.spriteY, &spriteSheet[state.aniN].sprites[frame / UpdateRate], spritePos.spriteRot, &localCenter, SDL_FLIP_NONE);
+//	SDL_RenderDrawRect(renderer, &hitbox);
 }

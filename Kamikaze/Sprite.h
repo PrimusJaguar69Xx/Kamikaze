@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "Resource_Texture.h"
 #include "SDL2\SDL.h"
 
@@ -61,10 +62,12 @@ class Sprite {
 	int xOffset;
 	int yOffset;
 
+	int frame;
 
+	int UpdateRate;
 	
 public:
-	Sprite(SDL_Renderer* render);
+	Sprite(SDL_Renderer* render, int updateRate);
 	~Sprite();
 
 	void InitSprite(char filepath[]);
@@ -72,6 +75,10 @@ public:
 
 	void SetSpriteN(int n) {
 		nSprite = n;
+	}
+
+	int GetUpdateRate() {
+		return UpdateRate;
 	}
 
 	void UpdateHitbox() {
@@ -98,6 +105,8 @@ public:
 	}
 
 	void SetState(int aniN, int nFrame) {
+		if (&state == nullptr)
+			return;
 		if (aniN > MAX_ANIMATIONS) printf("call to state failed, to high a number");
 		state.aniN = aniN;
 		state.nFrames = nFrame;
@@ -131,12 +140,29 @@ public:
 		return &spritePos.spriteRot;
 	}
 
-	void RenderSprite(int nFrame, int updateRate);
+	void SetFrame(int n) {
+		frame = n;
+	}
+
+	void NextFrame(bool loop) {
+		if ((frame + 1) / UpdateRate >= state.nFrames && loop)
+			frame = 0;
+
+		frame++;
+	}
+
+	int GetFrame() {
+		return frame;
+	}
+
+	void RenderSprite();
 
 	void CreateCustomHitbox(int offsetFromX, int offsetFromY, int height, int width);
 
 	hitInfo CheckLineOfFire(SDL_Rect targetHitbox, SDL_Rect* obstacles, int nObstacles, int xOffset, int yOffset);
+	hitInfo CheckLineOfFire(std::vector<Sprite*> targetHitboxes, SDL_Rect* obstacles, int nObstacles, int xOffset, int yOffset);
 
 	bool CheckCollision(SDL_Rect collisionObject, int xSpritePosOff = NULL, int ySpritePosOff = NULL);
 	bool CheckCollision(SDL_Rect collisionObject[], bool sprite, int nObjects, int xSpritePosOff = NULL, int ySpritePosOff = NULL);
+	bool CheckCollision(std::vector<Sprite*> collisionObject, bool sprite, int nObjects, int xSpritePosOff, int ySpritePosOff);
 };

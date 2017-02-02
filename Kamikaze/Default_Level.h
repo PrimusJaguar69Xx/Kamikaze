@@ -8,6 +8,8 @@
 #include "Object.h"
 #include "Crosshair.h"
 #include "Effect.h"
+#include <vector>
+#include "Timer.h"
 
 #define SPRITE_VEL 3
 #define SPRITE_SEC_VEL 2
@@ -25,28 +27,39 @@
 
 class Default_Level: public Level_Template {
 
+	Timer* timer;
+	Resource_Texture* timerBox;
+
 	int soliderFrame;
 	Sprite* solider;
 
 	Effect* hitObjectEffect;
 	Effect* hitSpriteEffect;
 
-	Sprite* Target;
+	std::vector<Sprite*> spriteList;
+
+	Sprite* solider2;
 	int TargetFrame;
 
 	Sprite* solider_effects;
-	int solider_effectsFrame;
-
+	Sprite* solider2_effects;
 
 	Object* boxes;
+	Object* boxes2;
+	Object* boxes3;
+
+	Object* barrel;
+	Object* barrel2;
+
+
 	MapTiles* background;
 	MapTiles* walls;
 
 	SDL_Rect objects[OBJECTS_MAX];
 	int nObjects;
 
-	SDL_Rect sprites[SPRITE_MAX];
-	int nSprite;
+//	SDL_Rect sprites[SPRITE_MAX];
+//	int nSprite;
 	
 	Crosshair* crosshair;
 

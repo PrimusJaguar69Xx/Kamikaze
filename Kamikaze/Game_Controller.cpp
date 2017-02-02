@@ -14,9 +14,20 @@ int Game_Controller::Init(int windowW, int windowH) {
 		return -1;
 	}
 
-	IMG_Init(IMG_INIT_PNG);
+	iResult = IMG_Init(IMG_INIT_PNG);
+	if (iResult < 0) {
+		return -1;
+	}
 
-	window = SDL_CreateWindow("KAMIKAZE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowW, windowH, NULL);
+	iResult = TTF_Init();
+	if (iResult < 0) {
+		return -1;
+	}
+
+	SDL_DisplayMode screenSize;
+	SDL_GetDesktopDisplayMode(0, &screenSize);
+
+	window = SDL_CreateWindow("KAMIKAZE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenSize.w, screenSize.h, NULL);
 	if (window == NULL) {
 		return -1;
 	}
@@ -28,6 +39,9 @@ int Game_Controller::Init(int windowW, int windowH) {
 		printf("error setting window to fullscreen");
 		exit(-1);
 	}
+
+	SDL_RenderSetLogicalSize(renderer, 1920, 1080);
+
 	iResult = SDL_SetRenderDrawColor(renderer, 0xFF, 0xAF, 0xFF, 0xAF);
 	if (iResult < 0) {
 		printf("error settng renderdrawcolor()");
